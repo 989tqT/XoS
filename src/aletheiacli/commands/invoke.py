@@ -8,7 +8,8 @@ from typing import Annotated
 import typer
 
 from aletheiacli.core.config import load_settings
-from aletheiacli.core.emit import error_envelope, success_envelope, write_stdout
+from aletheiacli.core.emit import error_envelope, new_trace_id, success_envelope, write_stdout
+from aletheiacli.core.executor import ExecutionError, execute
 from aletheiacli.core.ingress import (
     IngressError,
     command_name,
@@ -25,9 +26,10 @@ def run_invoke(
     request_json: Path | None,
     pretty: bool,
 ) -> int:
-    """Load request, validate, emit envelope; return process exit code."""
+    """Load request, validate, execute, emit envelope; return process exit code."""
     settings = load_settings()
     trace_command = _COMMAND_UNKNOWN
+    trace_id = new_trace_id()
 
     try:
         raw = load_request_bytes(
@@ -36,18 +38,19 @@ def run_invoke(
         )
         request = parse_agent_request(raw)
         trace_command = command_name(request)
-        envelope = success_envelope(
-            command=trace_command,
-            data={
-                "accepted": True,
-                "op": trace_command,
-                "execution": "pending",
-            },
-        )
+        data = execute(request)
+        envelope = success_envelope(command=trace_command, data=data, trace_id=trace_id)
     except IngressError as exc:
         envelope = error_envelope(
             command=trace_command,
             errors=[ErrorItem(code=exc.code, message=exc.message)],
+            trace_id=trace_id,
+        )
+    except ExecutionError as exc:
+        envelope = error_envelope(
+            command=trace_command,
+            errors=[ErrorItem(code=exc.code, message=exc.message)],
+            trace_id=trace_id,
         )
 
     write_stdout(envelope, pretty=pretty)
