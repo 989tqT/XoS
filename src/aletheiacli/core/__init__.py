@@ -1,1 +1,1 @@
-"""Core execution, sanitization, and logging (no CLI imports)."""
+"""Core services: configuration, ingress, response emission (no CLI imports)."""
