@@ -23,7 +23,7 @@ htmlcov/
 # Environment
 .env
 
-# Local agent workspace (user-owned; entire tree excluded from VCS)
+
 .agent/
 
 # IDE
