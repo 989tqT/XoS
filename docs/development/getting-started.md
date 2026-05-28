@@ -40,12 +40,13 @@ src/aletheiacli/
     config.py      ALETHEIA_* env
     ingress.py     load + validate JSON
     emit.py        envelope stdout
+    executor.py    read-only command dispatch (health)
 tests/
   unit/
   integration/
 ```
 
-**Not yet present (planned):** `core/sanitizer.py`, `core/executor.py`, `core/logger.py`.
+**Not yet present (planned):** `core/sanitizer.py`, `core/logger.py`; `read_log` in executor.
 
 ## Environment
 

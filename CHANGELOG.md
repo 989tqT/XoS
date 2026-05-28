@@ -5,6 +5,7 @@ All notable changes to **AletheiaCLI** are documented here.
 ## [Unreleased]
 
 ### Added
+- **executor**: `health` command — cross-platform runtime metadata via `platform`/`sys` (no shell)
 - **cli**: `aletheia invoke` — stdin JSON ingress, `--request-json` debug path, `--pretty`; envelope stdout; exit code 0/1
 - **core**: `config`, `ingress`, `emit` — payload size limit (`ALETHEIA_MAX_STDIN_BYTES`), structured ingress errors
 - **ci**: GitHub Actions `test-and-lint` (ruff, mypy, pytest; Ubuntu + Windows) and `threat-scan` (bandit, pip-audit on runtime deps); Dependabot for pip and Actions
@@ -13,8 +14,8 @@ All notable changes to **AletheiaCLI** are documented here.
 - **models**: Pydantic agent envelope (`ok`, `data`, `meta`, `errors`) with `meta.trace_id`; `HealthRequest`, `ReadLogRequest`, discriminated `AgentRequest`
 
 ### Changed
-- **docs**: synchronized README and `docs/` with Phase 1.2 runtime; clarified interim `execution: pending` payload
-- **cli**: replace phase-specific stub note in invoke success `data` with `execution: pending`
+- **cli**: `invoke` dispatches validated requests through `core.executor` (replaces ingress-only stub)
+- **docs**: document `health` response fields and `NOT_IMPLEMENTED` for `read_log`
 
 ### Planned
-- Phase 1.3–1.4: `health` / `read_log` E2E with sanitizer, executor, mask
+- Phase 1.4: `read_log` E2E with sanitizer, path allowlist, output mask

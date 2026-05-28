@@ -16,7 +16,7 @@ Structured documentation for architecture, development, security, and the agent 
 | 1.0 Toolchain & src-layout | Done |
 | 1.1 Pydantic models | Done |
 | 1.2 stdin JSON ingress | Done |
-| 1.3 `health` E2E | Planned |
+| 1.3 `health` E2E | Done |
 | 1.4 `read_log` E2E | Planned |
 
 ## Conventions

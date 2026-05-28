@@ -6,34 +6,10 @@ Entry point: **`aletheia invoke`**. Pipe JSON on **stdin** (preferred) or pass *
 
 | `op` | Description | Schema | Execution |
 |------|-------------|--------|-----------|
-| `health` | Liveness and runtime metadata | `HealthRequest` | Planned (Phase 1.3) |
+| `health` | Liveness and runtime metadata | `HealthRequest` | Done |
 | `read_log` | Read bytes from allowlisted log path | `ReadLogRequest` | Planned (Phase 1.4) |
 
-## Current `invoke` behavior (Phase 1.2)
-
-Valid requests return HTTP-neutral JSON on stdout:
-
-```json
-{
-  "ok": true,
-  "data": {
-    "accepted": true,
-    "op": "health",
-    "execution": "pending"
-  },
-  "meta": {
-    "trace_id": "<uuid>",
-    "command": "health",
-    "dry_run": false,
-    "version": "0.0.1"
-  },
-  "errors": []
-}
-```
-
-Invalid JSON, schema, or missing body → `ok: false` with `errors[].code` such as `INVALID_JSON`, `VALIDATION_ERROR`, `EMPTY_PAYLOAD`.
-
-## `health` (planned response `data`)
+## `health`
 
 **Request**
 
@@ -41,13 +17,24 @@ Invalid JSON, schema, or missing body → `ok: false` with `errors[].code` such 
 { "op": "health" }
 ```
 
-**Target `data` (Phase 1.3)**
+**Success `data`**
 
 ```json
-{ "status": "ok", "platform": "..." }
+{
+  "status": "ok",
+  "platform": "Windows",
+  "platform_release": "11",
+  "platform_version": "...",
+  "python_version": "3.12.3",
+  "python_implementation": "CPython",
+  "executable": "C:\\...\\python.exe",
+  "cli_version": "0.0.1"
+}
 ```
 
-## `read_log` (planned)
+No shell is spawned. Hostname and network probes are intentionally omitted.
+
+## `read_log`
 
 **Request**
 
@@ -61,7 +48,18 @@ Invalid JSON, schema, or missing body → `ok: false` with `errors[].code` such 
 
 | Field | Constraints |
 |-------|-------------|
-| `path` | `pathlib.Path`; no NUL bytes; must fall under `ALETHEIA_ALLOWED_ROOTS` |
+| `path` | `pathlib.Path`; no NUL bytes; must fall under `ALETHEIA_ALLOWED_ROOTS` (Phase 1.4) |
 | `max_bytes` | `1` … `1_048_576` (default `65536`) |
 
-**Target `data` (Phase 1.4):** masked log content and metadata (size, path basename only where policy requires).
+**Current behavior:** `ok: false`, `errors[].code` = `NOT_IMPLEMENTED`.
+
+## Error codes (ingress and execution)
+
+| Code | Meaning |
+|------|---------|
+| `EMPTY_PAYLOAD` | No stdin / empty body |
+| `INVALID_JSON` | JSON parse failure |
+| `VALIDATION_ERROR` | Pydantic schema rejection |
+| `PAYLOAD_TOO_LARGE` | Exceeds `ALETHEIA_MAX_STDIN_BYTES` |
+| `REQUEST_FILE_NOT_FOUND` | `--request-json` path missing |
+| `NOT_IMPLEMENTED` | Valid `op` not yet executed (`read_log`) |
