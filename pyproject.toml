@@ -18,7 +18,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "mypy>=1.14,<2",
-    "pytest>=8.3,<9",
+    "pytest>=9.0.3,<10",
     "pytest-cov>=6.0,<7",
     "ruff>=0.9,<1",
 ]
@@ -72,7 +72,10 @@ select = [
 ignore = ["S101"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101"]
+"tests/**" = ["S101", "TC003"]
+"src/aletheiacli/models/**" = ["TC003"]
+"src/aletheiacli/commands/**" = ["TC003"]
+"src/aletheiacli/core/**" = ["TC003"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -86,3 +89,7 @@ branch = true
 [tool.coverage.report]
 fail_under = 0
 show_missing = true
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests"]
+skips = []
