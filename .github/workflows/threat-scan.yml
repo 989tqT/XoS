@@ -1,0 +1,40 @@
+name: Threat Scan
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+  # Weekly Monday 06:00 UTC — dependency and static security pass
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  static-security:
+    name: Bandit and pip-audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Bandit
+        run: python -m pip install --upgrade "pip>=26.1" bandit[toml]
+
+      - name: Bandit (SAST on src/)
+        run: bandit -r src -c pyproject.toml -ll
+
+      - name: pip-audit (runtime dependencies only)
+        run: |
+          python -m pip install --upgrade "pip>=26.1" pip-audit
+          pip install .
+          pip-audit --desc on
