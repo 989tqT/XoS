@@ -23,6 +23,9 @@ htmlcov/
 # Environment
 .env
 
+# Local agent / IDE rules (user-owned, not committed)
+.agent/
+
 # IDE
 .idea/
 .vscode/
