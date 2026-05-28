@@ -13,6 +13,16 @@ GitHub Actions run on **push** and **pull_request** to `main` / `master`.
 
 - **OS:** `ubuntu-latest`, `windows-latest`
 - **Python:** `3.12`
+- **Env:** `PYTHONUTF8=1` (Windows UTF-8 stdout for JSON tests)
+
+### Phase 1.3 push checklist
+
+The `feat(cli): wire invoke to executor` commit must include **all** of the following or CI will fail:
+
+- `src/aletheiacli/core/executor.py`
+- `src/aletheiacli/commands/invoke.py`
+- `tests/unit/test_executor.py`
+- `tests/integration/test_invoke_cli.py` (expects `data.status`, not `execution: pending`)
 
 ### Schedule
 

@@ -14,6 +14,7 @@ All notable changes to **AletheiaCLI** are documented here.
 - **models**: Pydantic agent envelope (`ok`, `data`, `meta`, `errors`) with `meta.trace_id`; `HealthRequest`, `ReadLogRequest`, discriminated `AgentRequest`
 
 ### Changed
+- **ci**: split pip install steps for Windows; set `PYTHONUTF8` and Node 24 action env
 - **cli**: `invoke` dispatches validated requests through `core.executor` (replaces ingress-only stub)
 - **docs**: document `health` response fields and `NOT_IMPLEMENTED` for `read_log`
 
