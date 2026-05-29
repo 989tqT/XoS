@@ -4,6 +4,7 @@ from aletheiacli.models.agent_requests import (
     AgentRequest,
     HealthRequest,
     ReadLogRequest,
+    WriteFileRequest,
 )
 from aletheiacli.models.agent_responses import (
     AgentResponse,
@@ -18,4 +19,5 @@ __all__ = [
     "HealthRequest",
     "ReadLogRequest",
     "ResponseMeta",
+    "WriteFileRequest",
 ]

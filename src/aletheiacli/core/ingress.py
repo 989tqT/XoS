@@ -9,7 +9,7 @@ from typing import Final, assert_never
 
 from pydantic import TypeAdapter, ValidationError
 
-from aletheiacli.models import AgentRequest, HealthRequest, ReadLogRequest
+from aletheiacli.models import AgentRequest, HealthRequest, ReadLogRequest, WriteFileRequest
 
 _REQUEST_ADAPTER: Final[TypeAdapter[AgentRequest]] = TypeAdapter(AgentRequest)
 
@@ -116,4 +116,6 @@ def command_name(request: AgentRequest) -> str:
         return "health"
     if isinstance(request, ReadLogRequest):
         return "read_log"
+    if isinstance(request, WriteFileRequest):
+        return "write_file"
     assert_never(request)

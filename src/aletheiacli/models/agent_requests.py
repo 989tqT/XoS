@@ -41,7 +41,32 @@ class ReadLogRequest(BaseModel):
         return candidate
 
 
+class WriteFileRequest(BaseModel):
+    """Write content to a file under allowed root (integrity and path checks enforced in core)."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    op: Literal["write_file"] = "write_file"
+    path: Path
+    content: str = Field(max_length=1_048_576)
+
+    @field_validator("path", mode="before")
+    @classmethod
+    def coerce_path(cls, value: object) -> Path:
+        if isinstance(value, Path):
+            candidate = value
+        elif isinstance(value, str):
+            candidate = Path(value)
+        else:
+            msg = "path must be a string or Path"
+            raise TypeError(msg)
+        if "\x00" in str(candidate):
+            msg = "path must not contain null bytes"
+            raise ValueError(msg)
+        return candidate
+
+
 AgentRequest = Annotated[
-    HealthRequest | ReadLogRequest,
+    HealthRequest | ReadLogRequest | WriteFileRequest,
     Field(discriminator="op"),
 ]
