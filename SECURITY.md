@@ -19,7 +19,8 @@
 ## Security posture (current)
 
 - JSON-only agent I/O with Pydantic validation (`extra="forbid"`).
-- No `shell=True` in executor; read-only file access is governed by strict directory-traversal and symlink controls (Phase 1.4).
+- No `shell=True` in executor; file access is governed by strict directory-traversal and symlink controls (Phase 1.4).
+- Secure file writing is restricted by recursive parent symlink/junction audits, strict normalization order, integrity denylists, disk space limits, and folder size quotas (Phase 1.5).
 - Double-layer masking (global multiline + line-by-line single line) and XML CDATA breakout defense to prevent Second-Order Prompt Injection (Phase 1.4).
 - CI: `ruff`, `mypy --strict`, `pytest`, `bandit`, `pip-audit` on push/PR.
 
