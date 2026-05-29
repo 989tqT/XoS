@@ -118,12 +118,11 @@ def sanitize_and_resolve_path(
     for root in allowed_roots:
         try:
             resolved_root = root.resolve(strict=True)
-            combined = resolved_root / user_path
+            combined = Path(os.path.normpath(resolved_root / user_path))
 
             if write_mode:
                 # Verify that no ancestor in the requested path is a symlink or junction point
-                norm_combined = Path(os.path.normpath(combined))
-                curr = norm_combined.parent
+                curr = combined.parent
                 while curr != resolved_root and curr != curr.parent:
                     try:
                         stat_result = curr.lstat()
