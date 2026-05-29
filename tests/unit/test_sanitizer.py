@@ -92,3 +92,72 @@ def test_sanitize_supports_multiple_roots(tmp_path: Path) -> None:
 
     assert sanitize_and_resolve_path(Path("app1.log"), allowed) == log1.resolve()
     assert sanitize_and_resolve_path(Path("app2.log"), allowed) == log2.resolve()
+
+
+def test_sanitize_write_mode_non_existent_file_allowed(tmp_path: Path) -> None:
+    root = tmp_path / "logs"
+    root.mkdir()
+    allowed = [root]
+    # In write_mode=True, a non-existent file is allowed if the parent dir exists
+    resolved = sanitize_and_resolve_path(Path("new.log"), allowed, write_mode=True)
+    assert resolved == (root / "new.log").resolve()
+
+
+def test_sanitize_write_mode_parent_dir_must_exist(tmp_path: Path) -> None:
+    root = tmp_path / "logs"
+    root.mkdir()
+    allowed = [root]
+    # Directory Existence Rule: sub/ doesn't exist, must be rejected
+    with pytest.raises(ValueError, match="parent directory does not exist"):
+        sanitize_and_resolve_path(Path("sub/new.log"), allowed, write_mode=True)
+
+
+def test_sanitize_write_mode_integrity_denylist(tmp_path: Path) -> None:
+    root = tmp_path / "logs"
+    root.mkdir()
+    allowed = [root]
+
+    # Block writing to .cursorrules
+    with pytest.raises(ValueError, match="write or modification of system files is prohibited"):
+        sanitize_and_resolve_path(Path(".cursorrules"), allowed, write_mode=True)
+
+    # Obfuscated relative paths must be resolved first and blocked
+    with pytest.raises(ValueError, match="write or modification of system files is prohibited"):
+        sanitize_and_resolve_path(Path("sub/../.cursorrules"), allowed, write_mode=True)
+
+
+def test_sanitize_write_mode_rejects_symlink_file(tmp_path: Path) -> None:
+    root = tmp_path / "logs"
+    root.mkdir()
+    allowed = [root]
+
+    target = root / "target.log"
+    target.write_text("real data")
+
+    symlink_file = root / "link.log"
+    try:
+        symlink_file.symlink_to(target)
+    except OSError:
+        pytest.skip("Symlinks not supported or requires admin on Windows")
+
+    with pytest.raises(ValueError, match="writing to symlinks is prohibited"):
+        sanitize_and_resolve_path(Path("link.log"), allowed, write_mode=True)
+
+
+def test_sanitize_write_mode_rejects_symlink_parent(tmp_path: Path) -> None:
+    root = tmp_path / "logs"
+    root.mkdir()
+    allowed = [root]
+
+    real_sub = tmp_path / "real_sub"
+    real_sub.mkdir()
+
+    symlink_dir = root / "sub_link"
+    try:
+        symlink_dir.symlink_to(real_sub)
+    except OSError:
+        pytest.skip("Symlinks not supported or requires admin on Windows")
+
+    # Accessing file inside symlink parent must be rejected by Parent Directory Verification
+    with pytest.raises(ValueError, match="symlink detected in parent directory"):
+        sanitize_and_resolve_path(Path("sub_link/app.log"), allowed, write_mode=True)
