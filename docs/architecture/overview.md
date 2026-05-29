@@ -19,7 +19,7 @@ AletheiaCLI is a **mediation layer** between untrusted AI agents and the host OS
 └───────────────────────────┬─────────────────────────────┘
                             ▼
 ┌─────────────────────────────────────────────────────────┐
-│  core/       sanitizer → executor (read-only) → logger   │
+│  core/       sanitizer → executor (read/write limits)   │
 └───────────────────────────┬─────────────────────────────┘
                             ▼
                      OS / filesystem (subset)
@@ -36,5 +36,6 @@ AletheiaCLI is a **mediation layer** between untrusted AI agents and the host OS
 ## Design rules
 
 - **Allowlist over denylist** for operations and paths.
+- **Integrity Denylists** on resolved canonical paths to prevent agent self-modification.
 - **No `shell=True`** for subprocess (when used).
 - **Cross-platform paths** via `pathlib.Path` only.

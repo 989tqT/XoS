@@ -5,9 +5,10 @@
 | Control | Phase | Mechanism |
 |---------|-------|-----------|
 | Structured input | 1.1 ✓ | Pydantic, `extra="forbid"` |
-| No shell injection | 1.4 | argv-only / Python I/O, no `shell=True` |
-| Path allowlist | 1.4 | `ALETHEIA_ALLOWED_ROOTS` + `Path.resolve()` |
-| Output masking | 1.4 | Regex mask on logs/errors |
+| No shell injection | 1.4 / 1.5 ✓ | argv-only / Python I/O, no `shell=True` |
+| Path allowlist | 1.4 / 1.5 ✓ | `ALETHEIA_ALLOWED_ROOTS` + strict normalization resolution |
+| Output masking | 1.4 ✓ | Regex mask on logs/errors |
+| Write protection | 1.5 ✓ | `os.O_NOFOLLOW` + ancestor symlink/junction audits + folder quotas (50MB) + disk space guards (100MB) |
 | Dry-run plan | 3 | `--dry-run` structured plan |
 
 ## What it does **not** enforce

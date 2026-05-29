@@ -40,13 +40,13 @@ src/aletheiacli/
     config.py      ALETHEIA_* env
     ingress.py     load + validate JSON
     emit.py        envelope stdout
-    executor.py    read-only command dispatch (health)
+    executor.py    command dispatch (health, read_log, write_file)
+    sanitizer.py   zero-trust path boundary validation
+    masking.py     sensitive logs masking engine
 tests/
   unit/
   integration/
 ```
-
-**Not yet present (planned):** `core/sanitizer.py`, `core/logger.py`; `read_log` in executor.
 
 ## Environment
 
@@ -54,7 +54,7 @@ Copy `.env.example` to `.env` (never commit `.env`):
 
 | Variable | Purpose |
 |----------|---------|
-| `ALETHEIA_ALLOWED_ROOTS` | Comma-separated absolute paths for `read_log` (Phase 1.4) |
+| `ALETHEIA_ALLOWED_ROOTS` | Comma-separated absolute paths for `read_log` and `write_file` (Phase 1.4 / 1.5) |
 | `ALETHEIA_MAX_STDIN_BYTES` | Max stdin / request file size (default `1048576`) |
 
 ## Invoke locally

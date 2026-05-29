@@ -23,7 +23,7 @@ All agent-facing output on **stdout** is a single JSON document.
 | `ok` | `bool` | `false` when validation or execution failed |
 | `data` | `object` | Command-specific payload |
 | `meta.trace_id` | UUID | Correlate with masked internal logs |
-| `meta.command` | `string` | e.g. `health`, `read_log` |
+| `meta.command` | `string` | e.g. `health`, `read_log`, `write_file` |
 | `meta.dry_run` | `bool` | Reserved for plan-only mode (future) |
 | `errors` | `array` | `{ "code", "message" }` — messages masked at output (Phase 1.4+) |
 
@@ -32,7 +32,8 @@ All agent-facing output on **stdout** is a single JSON document.
 | `op` | Model | Ingress | Execution |
 |------|--------|---------|-----------|
 | `health` | `HealthRequest` | Done | Done |
-| `read_log` | `ReadLogRequest` | Done | Planned (Phase 1.4) |
+| `read_log` | `ReadLogRequest` | Done | Done (Phase 1.4) |
+| `write_file` | `WriteFileRequest` | Done | Done (Phase 1.5) |
 
 Implementation: `src/aletheiacli/models/`.
 
@@ -63,4 +64,5 @@ aletheia invoke --pretty
 }
 ```
 
-`read_log` is fully implemented in Phase 1.4, returning the masked log content enclosed in a protective CDATA XML block.
+- **`read_log`:** Fully implemented in Phase 1.4, returning the masked log content enclosed in a protective CDATA XML block.
+- **`write_file`:** Fully implemented in Phase 1.5, returning `path`, `resolved_path`, `bytes_written`, and `status: "success"` after evaluating disk space, file system quotas, and parent symlink and junction point integrity.
