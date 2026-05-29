@@ -26,7 +26,7 @@ def test_invoke_health_stdin() -> None:
     assert payload["data"]["cli_version"] == __version__
 
 
-def test_invoke_read_log_not_implemented() -> None:
+def test_invoke_read_log_access_denied() -> None:
     result = runner.invoke(
         app,
         ["invoke"],
@@ -35,7 +35,7 @@ def test_invoke_read_log_not_implemented() -> None:
     assert result.exit_code == 1
     payload = json.loads(result.stdout)
     assert payload["ok"] is False
-    assert payload["errors"][0]["code"] == "NOT_IMPLEMENTED"
+    assert payload["errors"][0]["code"] == "ACCESS_DENIED"
 
 
 def test_invoke_validation_error() -> None:

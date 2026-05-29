@@ -2,7 +2,7 @@
 
 Secure JSON-mediated CLI boundary for AI agents. All agent I/O uses structured JSON on stdin/stdout.
 
-**Current behavior:** `health` runs end-to-end via `invoke`. `read_log` is validated but returns `NOT_IMPLEMENTED` until Phase 1.4 — see [docs/api/README.md](docs/api/README.md).
+**Current behavior:** `health` and `read_log` run end-to-end via `invoke`. Inputs are strictly sanitized and outputs are masked under Zero-Trust protocols — see [docs/README.md](docs/README.md).
 
 ## Requirements
 

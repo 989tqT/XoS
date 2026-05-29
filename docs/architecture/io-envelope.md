@@ -63,4 +63,4 @@ aletheia invoke --pretty
 }
 ```
 
-`read_log` returns `NOT_IMPLEMENTED` until Phase 1.4.
+`read_log` is fully implemented in Phase 1.4, returning the masked log content enclosed in a protective CDATA XML block.
