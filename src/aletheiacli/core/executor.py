@@ -101,4 +101,3 @@ def execute(request: AgentRequest) -> dict[str, object]:
     if isinstance(request, ReadLogRequest):
         return execute_read_log(request)
     assert_never(request)
-

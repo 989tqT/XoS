@@ -49,4 +49,3 @@ def load_settings() -> Settings:
     )
     roots = _parse_allowed_roots(os.environ.get("ALETHEIA_ALLOWED_ROOTS", ""))
     return Settings(max_stdin_bytes=max_stdin, allowed_roots=roots)
-

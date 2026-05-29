@@ -36,11 +36,13 @@ def test_execute_read_log_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
-    request = ReadLogRequest.model_validate({
-        "op": "read_log",
-        "path": "app.log",
-        "max_bytes": 100,
-    })
+    request = ReadLogRequest.model_validate(
+        {
+            "op": "read_log",
+            "path": "app.log",
+            "max_bytes": 100,
+        }
+    )
     result = execute(request)
 
     assert result["path"] == "app.log"
@@ -68,11 +70,13 @@ def test_execute_read_log_truncation(tmp_path: Path, monkeypatch: pytest.MonkeyP
     )
 
     # Ask for strictly 25 bytes
-    request = ReadLogRequest.model_validate({
-        "op": "read_log",
-        "path": "large.log",
-        "max_bytes": 25,
-    })
+    request = ReadLogRequest.model_validate(
+        {
+            "op": "read_log",
+            "path": "large.log",
+            "max_bytes": 25,
+        }
+    )
     result = execute(request)
 
     assert result["bytes_read"] == 25
@@ -89,10 +93,12 @@ def test_execute_read_log_file_not_found(tmp_path: Path, monkeypatch: pytest.Mon
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
-    request = ReadLogRequest.model_validate({
-        "op": "read_log",
-        "path": "missing.log",
-    })
+    request = ReadLogRequest.model_validate(
+        {
+            "op": "read_log",
+            "path": "missing.log",
+        }
+    )
     with pytest.raises(ExecutionError) as exc_info:
         execute(request)
     assert exc_info.value.code == "FILE_NOT_FOUND"
@@ -107,10 +113,12 @@ def test_execute_read_log_access_denied(tmp_path: Path, monkeypatch: pytest.Monk
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
-    request = ReadLogRequest.model_validate({
-        "op": "read_log",
-        "path": "../outside.log",
-    })
+    request = ReadLogRequest.model_validate(
+        {
+            "op": "read_log",
+            "path": "../outside.log",
+        }
+    )
     with pytest.raises(ExecutionError) as exc_info:
         execute(request)
     assert exc_info.value.code in ("ACCESS_DENIED", "FILE_NOT_FOUND")
