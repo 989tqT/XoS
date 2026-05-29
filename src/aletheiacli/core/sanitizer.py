@@ -45,8 +45,17 @@ def sanitize_and_resolve_path(user_path: Path, allowed_roots: list[Path]) -> Pat
         ValueError: If path validation fails (e.g. absolute paths, reserved names, traversal).
         FileNotFoundError: If the target file does not exist.
     """
-    # 1. Block absolute paths, drives, and anchors
-    if user_path.is_absolute() or user_path.drive or user_path.anchor:
+    # 1. Block absolute paths, drives, and anchors (including platform-cross detection)
+    path_str = str(user_path).strip()
+    if (
+        user_path.is_absolute()
+        or user_path.drive
+        or user_path.anchor
+        or (len(path_str) >= 2 and path_str[0].isalpha() and path_str[1] == ":")
+        or path_str.startswith("\\\\")
+        or path_str.startswith("\\")
+        or path_str.startswith("/")
+    ):
         raise ValueError("Absolute paths or drive anchors are not allowed")
 
     # 2. Block Windows Reserved Device Names
