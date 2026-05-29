@@ -6,6 +6,7 @@ import json
 import platform
 from pathlib import Path
 
+import pytest  # noqa: TC002
 from typer.testing import CliRunner
 
 from aletheiacli import __version__
@@ -69,3 +70,48 @@ def test_invoke_pretty_stdout() -> None:
     assert "\n" in result.stdout
     payload = json.loads(result.stdout)
     assert payload["ok"] is True
+
+
+def test_invoke_write_file_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Set allowed roots to the temp directory
+    monkeypatch.setenv("ALETHEIA_ALLOWED_ROOTS", str(tmp_path))
+
+    payload = {
+        "op": "write_file",
+        "path": "test_write.txt",
+        "content": "E2E Integration Write works!",
+    }
+
+    result = runner.invoke(
+        app,
+        ["invoke"],
+        input=json.dumps(payload),
+    )
+    assert result.exit_code == 0
+    response = json.loads(result.stdout)
+    assert response["ok"] is True
+    assert response["data"]["bytes_written"] == len("E2E Integration Write works!")
+
+    written_file = tmp_path / "test_write.txt"
+    assert written_file.exists()
+    assert written_file.read_text(encoding="utf-8") == "E2E Integration Write works!"
+
+
+def test_invoke_write_file_denylist_denied(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ALETHEIA_ALLOWED_ROOTS", str(tmp_path))
+
+    payload = {
+        "op": "write_file",
+        "path": ".cursorrules",
+        "content": "AI OVERRIDE RULE",
+    }
+
+    result = runner.invoke(
+        app,
+        ["invoke"],
+        input=json.dumps(payload),
+    )
+    assert result.exit_code == 1
+    response = json.loads(result.stdout)
+    assert response["ok"] is False
+    assert response["errors"][0]["code"] == "ACCESS_DENIED"
