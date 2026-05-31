@@ -1,4 +1,4 @@
-"""Integration tests for ``aletheia invoke``."""
+"""Integration tests for ``xos invoke``."""
 
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ from pathlib import Path
 import pytest  # noqa: TC002
 from typer.testing import CliRunner
 
-from aletheiacli import __version__
-from aletheiacli.__main__ import app
+from xos import __version__
+from xos.__main__ import app
 
 runner = CliRunner()
 
@@ -74,7 +74,7 @@ def test_invoke_pretty_stdout() -> None:
 
 def test_invoke_write_file_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # Set allowed roots to the temp directory
-    monkeypatch.setenv("ALETHEIA_ALLOWED_ROOTS", str(tmp_path))
+    monkeypatch.setenv("XOS_ALLOWED_ROOTS", str(tmp_path))
 
     payload = {
         "op": "write_file",
@@ -98,7 +98,7 @@ def test_invoke_write_file_success(tmp_path: Path, monkeypatch: pytest.MonkeyPat
 
 
 def test_invoke_write_file_denylist_denied(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("ALETHEIA_ALLOWED_ROOTS", str(tmp_path))
+    monkeypatch.setenv("XOS_ALLOWED_ROOTS", str(tmp_path))
 
     payload = {
         "op": "write_file",
@@ -115,3 +115,55 @@ def test_invoke_write_file_denylist_denied(tmp_path: Path, monkeypatch: pytest.M
     response = json.loads(result.stdout)
     assert response["ok"] is False
     assert response["errors"][0]["code"] == "ACCESS_DENIED"
+
+
+def test_invoke_session_e2e_lifecycle(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Point the session db and App Data root to a temporary folder
+    monkeypatch.setenv("XOS_APP_DATA_DIR", str(tmp_path))
+
+    # 1. Run handshake
+    result = runner.invoke(app, ["invoke"], input='{"op": "handshake"}')
+    assert result.exit_code == 0, result.stdout
+    response = json.loads(result.stdout)
+    assert response["ok"] is True
+    session_id = response["data"]["session_id"]
+    scratchpad_str = response["data"]["scratchpad"]
+
+    # 2. Write file inside the scratchpad
+    write_payload = {
+        "op": "write_file",
+        "path": "test_e2e.txt",
+        "content": "E2E scratchpad writing is flawless!",
+        "session_id": session_id,
+    }
+    result_write = runner.invoke(app, ["invoke"], input=json.dumps(write_payload))
+    assert result_write.exit_code == 0, result_write.stdout
+    response_write = json.loads(result_write.stdout)
+    assert response_write["ok"] is True
+
+    # 3. Read file back from scratchpad
+    read_payload = {
+        "op": "read_log",
+        "path": "test_e2e.txt",
+        "session_id": session_id,
+    }
+    result_read = runner.invoke(app, ["invoke"], input=json.dumps(read_payload))
+    assert result_read.exit_code == 0, result_read.stdout
+    response_read = json.loads(result_read.stdout)
+    assert response_read["ok"] is True
+    assert "flawless" in response_read["data"]["content"]
+
+    # 4. Clean up session
+    cleanup_payload = {
+        "op": "cleanup",
+        "session_id": session_id,
+    }
+    result_cleanup = runner.invoke(app, ["invoke"], input=json.dumps(cleanup_payload))
+    assert result_cleanup.exit_code == 0, result_cleanup.stdout
+    response_cleanup = json.loads(result_cleanup.stdout)
+    assert response_cleanup["ok"] is True
+    assert response_cleanup["data"]["status"] == "cleaned"
+
+    # 5. Verify physically deleted
+    assert not Path(scratchpad_str).exists()
+

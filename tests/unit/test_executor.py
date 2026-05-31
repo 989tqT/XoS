@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-from aletheiacli import __version__
-from aletheiacli.core.config import Settings
-from aletheiacli.core.executor import ExecutionError, execute, execute_health
-from aletheiacli.models import HealthRequest, ReadLogRequest, WriteFileRequest
+from xos import __version__
+from xos.core.config import Settings
+from xos.core.executor import ExecutionError, execute, execute_health
+from xos.models import HealthRequest, ReadLogRequest, WriteFileRequest
 
 
 def test_execute_health_returns_runtime_metadata() -> None:
@@ -35,7 +35,7 @@ def test_execute_read_log_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     log_file.write_text("Hello admin@example.com! password=123\x1b[31mRedText\x00")
 
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
@@ -67,7 +67,7 @@ def test_execute_read_log_truncation(tmp_path: Path, monkeypatch: pytest.MonkeyP
     log_file.write_bytes(b"123456789\n" * 10)
 
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
@@ -91,7 +91,7 @@ def test_execute_read_log_file_not_found(tmp_path: Path, monkeypatch: pytest.Mon
     root.mkdir()
 
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
@@ -111,7 +111,7 @@ def test_execute_read_log_access_denied(tmp_path: Path, monkeypatch: pytest.Monk
     root.mkdir()
 
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
@@ -131,7 +131,7 @@ def test_execute_write_file_success(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     root.mkdir()
 
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
@@ -159,7 +159,7 @@ def test_execute_write_file_disk_exhaustion(
     root.mkdir()
 
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
@@ -185,10 +185,10 @@ def test_execute_write_file_quota_exceeded(tmp_path: Path, monkeypatch: pytest.M
 
     # Mock _get_dir_size directly to trigger quota limit (50MB)
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
-    monkeypatch.setattr("aletheiacli.core.executor._get_dir_size", lambda path: 50_000_001)
+    monkeypatch.setattr("xos.core.executor._get_dir_size", lambda path: 50_000_001)
 
     request = WriteFileRequest.model_validate(
         {
@@ -211,7 +211,7 @@ def test_execute_write_file_junction_point(tmp_path: Path, monkeypatch: pytest.M
     root.mkdir()
 
     monkeypatch.setattr(
-        "aletheiacli.core.executor.load_settings",
+        "xos.core.executor.load_settings",
         lambda: Settings(max_stdin_bytes=1000, allowed_roots=[root]),
     )
 
@@ -226,7 +226,7 @@ def test_execute_write_file_junction_point(tmp_path: Path, monkeypatch: pytest.M
     fake_junction = root / "junction.txt"
     fake_junction.write_text("dummy")
 
-    def mock_lstat(self):
+    def mock_lstat(self: Path) -> object:
         if "junction.txt" in str(self):
             return MockStat()
         return orig_lstat(self)
@@ -243,3 +243,58 @@ def test_execute_write_file_junction_point(tmp_path: Path, monkeypatch: pytest.M
     with pytest.raises(ExecutionError) as exc_info:
         execute(request)
     assert exc_info.value.code == "ACCESS_DENIED"
+
+
+def test_execute_handshake_and_cleanup(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from xos.models import CleanupRequest, HandshakeRequest
+
+    # Mock get_app_data_dir to point to a temporary folder
+    monkeypatch.setenv("XOS_APP_DATA_DIR", str(tmp_path))
+
+    req_handshake = HandshakeRequest(ttl_seconds=3600)
+    result_handshake = execute(req_handshake)
+
+    assert "session_id" in result_handshake
+    assert "scratchpad" in result_handshake
+    assert result_handshake["status"] == "active"
+
+    session_id = result_handshake["session_id"]
+    scratchpad_path = Path(str(result_handshake["scratchpad"]))
+    assert scratchpad_path.exists()
+
+    # Verify write_file works to the scratchpad dynamically
+    from xos.models import WriteFileRequest
+    req_write = WriteFileRequest(
+        op="write_file",
+        path="temp.txt",
+        content="Dynamic scratchpad content works!",
+        session_id=session_id,
+    )
+    result_write = execute(req_write)
+    assert result_write["status"] == "success"
+
+    written_file = scratchpad_path / "temp.txt"
+    assert written_file.exists()
+    assert written_file.read_text(encoding="utf-8") == "Dynamic scratchpad content works!"
+
+    # Run cleanup
+    req_cleanup = CleanupRequest(session_id=session_id)
+    result_cleanup = execute(req_cleanup)
+
+    assert result_cleanup["status"] == "cleaned"
+    assert not scratchpad_path.exists()
+
+
+def test_execute_handshake_quota_limit(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from xos.models import HandshakeRequest
+
+    monkeypatch.setenv("XOS_APP_DATA_DIR", str(tmp_path))
+
+    # Mock active session count to simulate 50 active sessions
+    monkeypatch.setattr("xos.core.state.get_active_session_count", lambda db: 50)
+
+    req = HandshakeRequest(ttl_seconds=3600)
+    with pytest.raises(ExecutionError) as exc_info:
+        execute(req)
+    assert exc_info.value.code == "QUOTA_EXCEEDED"
+
