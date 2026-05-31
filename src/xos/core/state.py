@@ -173,7 +173,7 @@ def lazy_garbage_collect(db_path: Path) -> None:
         # transactional metadata delete to claim exclusive deletion right
         placeholders = ",".join("?" for _ in session_ids)
         cursor.execute(
-            f"DELETE FROM sessions WHERE session_id IN ({placeholders});",  # noqa: S608
+            f"DELETE FROM sessions WHERE session_id IN ({placeholders});",  # nosec B608 # noqa: S608
             session_ids,
         )
         conn.commit()
