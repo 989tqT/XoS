@@ -1,6 +1,6 @@
-# AletheiaCLI
+# About
 
-Secure JSON-mediated CLI boundary for AI agents. All agent I/O uses structured JSON on stdin/stdout.
+Aletheia is an secure JSON-mediated CLI boundary for AI agents. All agent I/O uses structured JSON on stdin/stdout.
 
 **Current behavior:** `health`, `read_log`, and `write_file` run end-to-end via `invoke`. Inputs are strictly sanitized, outputs are masked under Zero-Trust protocols, and write protections are enforced — see [docs/README.md](docs/README.md).
 
