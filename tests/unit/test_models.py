@@ -9,7 +9,7 @@ from uuid import UUID
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from aletheiacli.models import (
+from xos.models import (
     AgentRequest,
     AgentResponse,
     ErrorItem,

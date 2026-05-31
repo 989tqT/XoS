@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from aletheiacli.core.masking import MAX_LINE_LENGTH, mask_line, secure_envelope_cdata
+from xos.core.masking import MAX_LINE_LENGTH, mask_line, secure_envelope_cdata
 
 
 def test_mask_line_filters_aws_access_key() -> None:

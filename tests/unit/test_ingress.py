@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from aletheiacli.core.config import load_settings
-from aletheiacli.core.ingress import (
+from xos.core.config import load_settings
+from xos.core.ingress import (
     InvalidJsonError,
     PayloadTooLargeError,
     load_request_bytes,
@@ -42,7 +42,7 @@ def test_load_request_bytes_rejects_oversized_file(tmp_path: Path) -> None:
 
 
 def test_read_bytes_limited_enforces_cap() -> None:
-    from aletheiacli.core.ingress import read_bytes_limited
+    from xos.core.ingress import read_bytes_limited
 
     source = io.BytesIO(b"a" * 100)
     with pytest.raises(PayloadTooLargeError):
@@ -50,5 +50,5 @@ def test_read_bytes_limited_enforces_cap() -> None:
 
 
 def test_settings_default_max_stdin(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("ALETHEIA_MAX_STDIN_BYTES", raising=False)
+    monkeypatch.delenv("XOS_MAX_STDIN_BYTES", raising=False)
     assert load_settings().max_stdin_bytes == 1_048_576

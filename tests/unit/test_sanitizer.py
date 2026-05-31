@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from aletheiacli.core.sanitizer import sanitize_and_resolve_path
+from xos.core.sanitizer import sanitize_and_resolve_path
 
 
 def test_sanitize_rejects_absolute_paths() -> None:
