@@ -22,7 +22,7 @@ pip install -e ".[dev]"
 ```bash
 ruff check src tests
 ruff format --check src tests
-mypy
+mypy src
 pytest
 ```
 
@@ -37,12 +37,13 @@ src/xos/
     agent_requests.py
     agent_responses.py
   core/
-    config.py      XOS_* env
+    config.py      XOS_* env loading configurations
     ingress.py     load + validate JSON
     emit.py        envelope stdout
-    executor.py    command dispatch (health, read_log, write_file)
+    executor.py    command dispatch (health, handshake, cleanup, read_log, write_file)
     sanitizer.py   zero-trust path boundary validation
     masking.py     sensitive logs masking engine
+    state.py       zero-trust session state tracking database
 tests/
   unit/
   integration/
@@ -56,6 +57,7 @@ Copy `.env.example` to `.env` (never commit `.env`):
 |----------|---------|
 | `XOS_ALLOWED_ROOTS` | Comma-separated absolute paths for `read_log` and `write_file` (Phase 1.4 / 1.5) |
 | `XOS_MAX_STDIN_BYTES` | Max stdin / request file size (default `1048576`) |
+| `XOS_APP_DATA_DIR` | Absolute path to secure App Data Directory backing session tracking database and scratchpad workspaces (Phase 1.6) |
 
 ## Invoke locally
 

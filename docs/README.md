@@ -19,6 +19,7 @@ Structured documentation for architecture, development, security, and the agent 
 | 1.3 `health` E2E | Done |
 | 1.4 `read_log` E2E | Done |
 | 1.5 `write_file` E2E | Done |
+| 1.6 State Management & Session Isolation | Done |
 | 2.0 Tagging Pre-Alpha | Planned |
 
 ## Conventions
