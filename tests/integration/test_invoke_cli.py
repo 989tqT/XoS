@@ -166,4 +166,3 @@ def test_invoke_session_e2e_lifecycle(tmp_path: Path, monkeypatch: pytest.Monkey
 
     # 5. Verify physically deleted
     assert not Path(scratchpad_str).exists()
-

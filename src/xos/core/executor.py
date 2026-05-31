@@ -251,9 +251,7 @@ def execute_handshake(request: HandshakeRequest) -> dict[str, object]:
 
     # 2. enforce global cap of 50 active session
     if get_active_session_count(db_path) >= 50:
-        raise ExecutionError(
-            "QUOTA_EXCEEDED", "Active session quota limit exceeded (50 max)"
-        )
+        raise ExecutionError("QUOTA_EXCEEDED", "Active session quota limit exceeded (50 max)")
 
     # 3. establish session ID and secure scratchpad folder
     session_id = request.session_id or uuid.uuid4()

@@ -264,6 +264,7 @@ def test_execute_handshake_and_cleanup(tmp_path: Path, monkeypatch: pytest.Monke
 
     # Verify write_file works to the scratchpad dynamically
     from xos.models import WriteFileRequest
+
     req_write = WriteFileRequest(
         op="write_file",
         path="temp.txt",
@@ -297,4 +298,3 @@ def test_execute_handshake_quota_limit(tmp_path: Path, monkeypatch: pytest.Monke
     with pytest.raises(ExecutionError) as exc_info:
         execute(req)
     assert exc_info.value.code == "QUOTA_EXCEEDED"
-
