@@ -49,4 +49,4 @@ jobs:
         run: mypy
 
       - name: Pytest
-        run: pytest --cov=aletheiacli --cov-report=term-missing
+        run: pytest --cov=xos --cov-report=term-missing

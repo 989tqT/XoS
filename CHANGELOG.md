@@ -1,13 +1,13 @@
 # Changelog
 
-All notable changes to **AletheiaCLI** are documented here.
+All notable changes to **XoS** are documented here.
 
 ## [Unreleased]
 
 ### Added
 - **executor**: `health` command — cross-platform runtime metadata via `platform`/`sys` (no shell)
-- **cli**: `aletheia invoke` — stdin JSON ingress, `--request-json` debug path, `--pretty`; envelope stdout; exit code 0/1
-- **core**: `config`, `ingress`, `emit` — payload size limit (`ALETHEIA_MAX_STDIN_BYTES`), structured ingress errors
+- **cli**: `xos invoke` — stdin JSON ingress, `--request-json` debug path, `--pretty`; envelope stdout; exit code 0/1
+- **core**: `config`, `ingress`, `emit` — payload size limit (`XOS_MAX_STDIN_BYTES`), structured ingress errors
 - **ci**: GitHub Actions `test-and-lint` (ruff, mypy, pytest; Ubuntu + Windows) and `threat-scan` (bandit, pip-audit on runtime deps); Dependabot for pip and Actions
 - **ci**: pin `pytest>=9.0.3` (CVE-2025-71176); upgrade pip in workflows before audit
 - **docs**: `docs/` tree (architecture, development, security, api), root `SECURITY.md`

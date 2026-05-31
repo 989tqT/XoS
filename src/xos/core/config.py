@@ -41,11 +41,11 @@ class Settings:
 
 
 def load_settings() -> Settings:
-    """Load settings from ``ALETHEIA_*`` environment variables."""
+    """Load settings from ``XOS_*`` environment variables."""
     max_stdin = _parse_positive_int(
-        os.environ.get("ALETHEIA_MAX_STDIN_BYTES", ""),
-        name="ALETHEIA_MAX_STDIN_BYTES",
+        os.environ.get("XOS_MAX_STDIN_BYTES", ""),
+        name="XOS_MAX_STDIN_BYTES",
         default=_DEFAULT_MAX_STDIN_BYTES,
     )
-    roots = _parse_allowed_roots(os.environ.get("ALETHEIA_ALLOWED_ROOTS", ""))
+    roots = _parse_allowed_roots(os.environ.get("XOS_ALLOWED_ROOTS", ""))
     return Settings(max_stdin_bytes=max_stdin, allowed_roots=roots)

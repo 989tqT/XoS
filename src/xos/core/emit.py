@@ -5,8 +5,8 @@ from __future__ import annotations
 import sys
 from uuid import UUID, uuid4
 
-from aletheiacli import __version__
-from aletheiacli.models import AgentResponse, ErrorItem, ResponseMeta
+from xos import __version__
+from xos.models import AgentResponse, ErrorItem, ResponseMeta
 
 
 def new_trace_id() -> UUID:

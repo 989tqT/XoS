@@ -1,4 +1,4 @@
-"""``aletheia invoke`` — stdin JSON ingress and envelope stdout."""
+"""``xos invoke`` — stdin JSON ingress and envelope stdout."""
 
 from __future__ import annotations
 
@@ -7,16 +7,16 @@ from typing import Annotated
 
 import typer
 
-from aletheiacli.core.config import load_settings
-from aletheiacli.core.emit import error_envelope, new_trace_id, success_envelope, write_stdout
-from aletheiacli.core.executor import ExecutionError, execute
-from aletheiacli.core.ingress import (
+from xos.core.config import load_settings
+from xos.core.emit import error_envelope, new_trace_id, success_envelope, write_stdout
+from xos.core.executor import ExecutionError, execute
+from xos.core.ingress import (
     IngressError,
     command_name,
     load_request_bytes,
     parse_agent_request,
 )
-from aletheiacli.models import ErrorItem
+from xos.models import ErrorItem
 
 _COMMAND_UNKNOWN = "unknown"
 
