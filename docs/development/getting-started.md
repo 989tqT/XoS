@@ -29,7 +29,7 @@ pytest
 ## Layout (actual)
 
 ```text
-src/aletheiacli/
+src/xos/
   __main__.py      Typer app + invoke registration
   commands/
     invoke.py      stdin / --request-json ingress
@@ -37,7 +37,7 @@ src/aletheiacli/
     agent_requests.py
     agent_responses.py
   core/
-    config.py      ALETHEIA_* env
+    config.py      XOS_* env
     ingress.py     load + validate JSON
     emit.py        envelope stdout
     executor.py    command dispatch (health, read_log, write_file)
@@ -54,11 +54,11 @@ Copy `.env.example` to `.env` (never commit `.env`):
 
 | Variable | Purpose |
 |----------|---------|
-| `ALETHEIA_ALLOWED_ROOTS` | Comma-separated absolute paths for `read_log` and `write_file` (Phase 1.4 / 1.5) |
-| `ALETHEIA_MAX_STDIN_BYTES` | Max stdin / request file size (default `1048576`) |
+| `XOS_ALLOWED_ROOTS` | Comma-separated absolute paths for `read_log` and `write_file` (Phase 1.4 / 1.5) |
+| `XOS_MAX_STDIN_BYTES` | Max stdin / request file size (default `1048576`) |
 
 ## Invoke locally
 
 ```bash
-echo '{"op":"health"}' | aletheia invoke
+echo '{"op":"health"}' | xos invoke
 ```

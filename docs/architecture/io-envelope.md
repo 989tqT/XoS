@@ -35,18 +35,18 @@ All agent-facing output on **stdout** is a single JSON document.
 | `read_log` | `ReadLogRequest` | Done | Done (Phase 1.4) |
 | `write_file` | `WriteFileRequest` | Done | Done (Phase 1.5) |
 
-Implementation: `src/aletheiacli/models/`.
+Implementation: `src/xos/models/`.
 
-## Ingress (`aletheia invoke`)
+## Ingress (`xos invoke`)
 
 ```bash
-echo '{"op":"health"}' | aletheia invoke
-aletheia invoke --request-json ./request.json
-aletheia invoke --pretty
+echo '{"op":"health"}' | xos invoke
+xos invoke --request-json ./request.json
+xos invoke --pretty
 ```
 
 - **Primary:** JSON on **stdin**; empty TTY without `--request-json` → `EMPTY_PAYLOAD`.
-- **Limit:** `ALETHEIA_MAX_STDIN_BYTES` (default `1048576`).
+- **Limit:** `XOS_MAX_STDIN_BYTES` (default `1048576`).
 - **Errors:** `ok: false`, structured `errors[].code`; process exit code `1`.
 
 ### `health` success `data` (Phase 1.3)

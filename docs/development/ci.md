@@ -19,8 +19,8 @@ GitHub Actions run on **push** and **pull_request** to `main` / `master`.
 
 The `feat(cli): wire invoke to executor` commit must include **all** of the following or CI will fail:
 
-- `src/aletheiacli/core/executor.py`
-- `src/aletheiacli/commands/invoke.py`
+- `src/xos/core/executor.py`
+- `src/xos/commands/invoke.py`
 - `tests/unit/test_executor.py`
 - `tests/integration/test_invoke_cli.py` (expects `data.status`, not `execution: pending`)
 

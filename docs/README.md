@@ -1,4 +1,4 @@
-# AletheiaCLI Documentation
+# XoS Documentation
 
 Structured documentation for architecture, development, security, and the agent API.
 
@@ -23,6 +23,6 @@ Structured documentation for architecture, development, security, and the agent 
 
 ## Conventions
 
-- Source layout: `src/aletheiacli/` (`commands` → `models` → `core`).
+- Source layout: `src/xos/` (`commands` → `models` → `core`).
 - Agent stdout: single JSON envelope per invocation.
 - Changelog: root [CHANGELOG.md](../CHANGELOG.md).
