@@ -1,5 +1,15 @@
 # XoS (eXact Output System)
 
+[![CI/CD Status](https://img.shields.io/github/actions/workflow/status/989tqT/XoS/test-and-lint.yml?branch=main)](https://github.com/989tqT/XoS/blob/main/.github/workflows/test-and-lint.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/TQT/XoS/blob/main/LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.12+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Pydantic v2](https://img.shields.io/badge/Pydantic-v2-E92063?style=flat&logo=pydantic&logoColor=white)](https://pydantic.dev/)
+[![Tested with Pytest](https://img.shields.io/badge/tested_with-pytest-0A9EDC?style=flat&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![Lint: Ruff](https://img.shields.io/badge/lint-ruff-000000?style=flat&logo=ruff&logoColor=white)](https://github.com/astral-sh/ruff)
+[![Types: Mypy Strict](https://img.shields.io/badge/types-Mypy%20Strict-2F5C8F?style=flat&logo=python&logoColor=white)](https://mypy-lang.org/)
+[![Security: Bandit](https://img.shields.io/badge/security-Bandit-success?style=flat&logo=securityscorecard&logoColor=white)](https://github.com/PyCQA/bandit)
+
+
 XoS is a secure JSON-mediated CLI boundary for AI agents. All agent I/O uses structured JSON on stdin/stdout.
 
 **Current behavior:** `health`, `handshake`, `cleanup`, `read_log`, and `write_file` run end-to-end via `invoke`. Inputs are strictly sanitized, outputs are masked under Zero-Trust protocols, state is managed in a concurrent-safe SQLite database, and active session scratchpads are dynamically allowlisted for isolated work — see [docs/README.md](docs/README.md).
